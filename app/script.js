@@ -5,176 +5,221 @@
    point, createButton, textSize*/
 
 let backgroundColor,
-  spherePosition,
-  rectPosition,
-  squareCircleDist,
-  mouseCircleDist,
-  H, numberOfObstacles,
-  obstacle1, obstacle2, obstacle3, obstacle4, obstacle5, obstacle6, obstacle7, obstacle8, obstacle9, obstacle10, hit, winHit,
-  gameOver, button;
+	spherePosition,
+	rectPosition,
+	squareCircleDist,
+	mouseCircleDist,
+	H,
+	numberOfObstacles,
+	obstacle1,
+	obstacle2,
+	obstacle3,
+	obstacle4,
+	obstacle5,
+	obstacle6,
+	obstacle7,
+	obstacle8,
+	obstacle9,
+	obstacle10,
+	hit,
+	winHit,
+	gameOver,
+	button;
 let data;
 
+var mapimg;
+
+var clat = 0;
+var clon = 0;
+
+var ww = 1024;
+var hh = 512;
+
+var zoom = 1;
+var earthquakes;
+
+function preload() {
+	// The clon and clat in this url are edited to be in the correct order.
+	mapimg = loadImage(
+		'https://api.mapbox.com/styles/v1/mapbox/dark-v9/static/' +
+			clon +
+			',' +
+			clat +
+			',' +
+			zoom +
+			'/' +
+			ww +
+			'x' +
+			hh +
+			'pk.eyJ1IjoiYWx6aDkwMDAiLCJhIjoiY2tkNG8yZm13MWp1dDJycXZtN29hbm9qZyJ9.zbe-GRhR174ao3ZcFT3_Rw'
+	);
+	// earthquakes = loadStrings('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.csv');
+	earthquakes = loadStrings(
+		'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.csv'
+	);
+}
+
 function setup() {
-  //api call to get corona data 
-  var settings = {
-    "async": true,
-    "crossDomain": true,
-    "url": "https://www.trackcorona.live/api/cities",
-    "method": "GET"
-  }
+	//api call to get corona data
+	var settings = {
+		async: true,
+		crossDomain: true,
+		url: 'https://www.trackcorona.live/api/cities',
+		method: 'GET',
+	};
 
-  $.ajax(settings).done(function (response) {
-    data = response.data;
-    console.log(data);
-  });
+	$.ajax(settings).done(function (response) {
+		data = response.data;
+		console.log(data);
+	});
 
-  // Canvas & color settings
-  width = windowWidth;
-  height = windowHeight;
-  createCanvas(width, height);
-  colorMode(HSB, 360, 100, 100);
-  // colorMode(RGB);
-  rectMode(CENTER);
-  // backgroundColor = (0, 100, 100);
-  // This variable contains a JSON object
-  spherePosition = {
-    x: 100,
-    y: 100
-  };
-  rectPosition = {
-    x: 150,
-    y: 200
-  };
-  H = 0;
+	// Canvas & color settings
+	width = windowWidth;
+	height = windowHeight;
+	createCanvas(width, height);
+	colorMode(HSB, 360, 100, 100);
+	// colorMode(RGB);
+	rectMode(CENTER);
+	// backgroundColor = (0, 100, 100);
+	// This variable contains a JSON object
+	spherePosition = {
+		x: 100,
+		y: 100,
+	};
+	rectPosition = {
+		x: 150,
+		y: 200,
+	};
+	H = 0;
 
-  hit = false;
-  gameOver = false;
-  winHit = false;
+	hit = false;
+	gameOver = false;
+	winHit = false;
 
-  obstacle1 = new obstacles();
-  obstacle2 = new obstacles();
-  obstacle3 = new obstacles();
-  obstacle4 = new obstacles();
-  obstacle5 = new obstacles();
-  obstacle6 = new obstacles();
-  obstacle7 = new obstacles();
-  obstacle8 = new obstacles();
-  obstacle9 = new obstacles();
-  obstacle10 = new obstacles();
+	obstacle1 = new obstacles();
+	obstacle2 = new obstacles();
+	obstacle3 = new obstacles();
+	obstacle4 = new obstacles();
+	obstacle5 = new obstacles();
+	obstacle6 = new obstacles();
+	obstacle7 = new obstacles();
+	obstacle8 = new obstacles();
+	obstacle9 = new obstacles();
+	obstacle10 = new obstacles();
 
-  // backgroundColor = (
-  // 4 * (100 - 100 * sigmoid((4 * mouseCircleDist) / (width + height))));
-  gameOver = false;
+	// backgroundColor = (
+	// 4 * (100 - 100 * sigmoid((4 * mouseCircleDist) / (width + height))));
+	gameOver = false;
 }
 
 function draw() {
-  background((backgroundColor),
-    100,
-    100
-  );
+	background(backgroundColor, 100, 100);
 
-  if (!gameOver) {
-    backgroundColor = (
-      4 * (100 - 100 * sigmoid((4 * mouseCircleDist) / (width + height))));
-    strokeWeight(0);
-    fill(backgroundColor, 100, 100);
-    ellipse(spherePosition.x, spherePosition.y, 20, 20);
-    rect(rectPosition.x, rectPosition.y, 20, 20);
-    line(spherePosition.x, spherePosition.y, rectPosition.x, rectPosition.y);
-    squareCircleDist = calculateDistance(spherePosition, rectPosition);
+	if (!gameOver) {
+		backgroundColor =
+			4 * (100 - 100 * sigmoid((4 * mouseCircleDist) / (width + height)));
+		strokeWeight(0);
+		fill(backgroundColor, 100, 100);
+		ellipse(spherePosition.x, spherePosition.y, 20, 20);
+		rect(rectPosition.x, rectPosition.y, 20, 20);
+		line(spherePosition.x, spherePosition.y, rectPosition.x, rectPosition.y);
+		squareCircleDist = calculateDistance(spherePosition, rectPosition);
 
-    fill(0);
-    text(
-      `the distance between the square and circle is ${squareCircleDist}`,
-      5,
-      15
-    );
+		fill(0);
+		text(
+			`the distance between the square and circle is ${squareCircleDist}`,
+			5,
+			15
+		);
 
-    let mousePosition = {
-      x: mouseX,
-      y: mouseY
-    };
-    mouseCircleDist = calculateDistance(spherePosition, mousePosition);
-    text(
-      `the distance between the mouse and circle is ${mouseCircleDist}`,
-      5,
-      30
-    );
+		let mousePosition = {
+			x: mouseX,
+			y: mouseY,
+		};
+		mouseCircleDist = calculateDistance(spherePosition, mousePosition);
+		text(
+			`the distance between the mouse and circle is ${mouseCircleDist}`,
+			5,
+			30
+		);
 
-    obstacle1.show();
-    obstacle2.show();
-    obstacle3.show();
-    obstacle4.show();
-    obstacle5.show();
-    obstacle6.show();
-    obstacle7.show();
-    obstacle8.show();
-    obstacle9.show();
-    obstacle10.show();
+		obstacle1.show();
+		obstacle2.show();
+		obstacle3.show();
+		obstacle4.show();
+		obstacle5.show();
+		obstacle6.show();
+		obstacle7.show();
+		obstacle8.show();
+		obstacle9.show();
+		obstacle10.show();
 
-    strokeWeight(10);
-    point(mouseX, mouseY);
+		strokeWeight(10);
+		point(mouseX, mouseY);
 
-    collisions();
-
-  }
+		collisions();
+	}
 }
 
 function mousePressed() {
-  spherePosition.x = random(width);
-  spherePosition.y = random(height);
+	spherePosition.x = random(width);
+	spherePosition.y = random(height);
 }
 
 function calculateDistance(coordinate1, coordinate2) {
-  let dist = Math.sqrt(
-    (coordinate1.x - coordinate2.x) ** 2 + (coordinate1.y - coordinate2.y) ** 2
-  );
-  dist = Math.round(dist);
-  return dist;
+	let dist = Math.sqrt(
+		(coordinate1.x - coordinate2.x) ** 2 + (coordinate1.y - coordinate2.y) ** 2
+	);
+	dist = Math.round(dist);
+	return dist;
 }
-
 
 function sigmoid(t) {
-  return 1 / (1 + Math.pow(Math.E, -t));
+	return 1 / (1 + Math.pow(Math.E, -t));
 }
 
-
 class obstacles {
-  constructor() {
-    this.x = random(width);
-    this.y = random(height);
-    this.s = random(2, 20);
-  }
+	constructor() {
+		this.x = random(width);
+		this.y = random(height);
+		this.s = random(2, 20);
+	}
 
-  show() {
-    fill(220, 80, 80);
-    ellipse(this.x, this.y, this.s);
+	show() {
+		fill(220, 80, 80);
+		ellipse(this.x, this.y, this.s);
 
-    hit = collidePointCircle(mouseX, mouseY, this.x, this.y, this.s)
+		hit = collidePointCircle(mouseX, mouseY, this.x, this.y, this.s);
 
-    if (hit) {
-      gameOver = true;
-    }
+		if (hit) {
+			gameOver = true;
+		}
 
-    if (gameOver == true) {
-      background(100);
-      textSize(20);
-      fill(0);
-      text("Game Over", width / 2, height / 2);
-      button = createButton('Try again!');
-      button.position(100, 100);
-      button.mousePressed(gameOver = false);
-    }
-  }
+		if (gameOver == true) {
+			background(100);
+			textSize(20);
+			fill(0);
+			text('Game Over', width / 2, height / 2);
+			button = createButton('Try again!');
+			button.position(100, 100);
+			button.mousePressed((gameOver = false));
+		}
+	}
 }
 
 function collisions() {
-  winHit = collidePointCircle(mouseX, mouseY, spherePosition.x, spherePosition.y, 20);
-  if (winHit) {
-    background(100);
-    textSize(30);
-    text("You found the circle!", width / 2, height / 2);
-    fill(0);
-    ellipse(spherePosition.x, spherePosition.y, 20, 20);
-  }
+	winHit = collidePointCircle(
+		mouseX,
+		mouseY,
+		spherePosition.x,
+		spherePosition.y,
+		20
+	);
+	if (winHit) {
+		background(100);
+		textSize(30);
+		text('You found the circle!', width / 2, height / 2);
+		fill(0);
+		ellipse(spherePosition.x, spherePosition.y, 20, 20);
+	}
 }
