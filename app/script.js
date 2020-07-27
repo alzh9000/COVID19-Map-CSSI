@@ -57,6 +57,18 @@ function preload() {
 	earthquakes = loadStrings(
 		'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.csv'
 	);
+
+	var settings = {
+		async: true,
+		crossDomain: true,
+		url: 'https://www.trackcorona.live/api/cities',
+		method: 'GET',
+	};
+
+	$.ajax(settings).done(function (response) {
+		data = response.data;
+		console.log(data);
+	});
 }
 
 function mercX(lon) {
@@ -76,17 +88,6 @@ function mercY(lat) {
 
 function setup() {
 	//api call to get corona data
-	var settings = {
-		async: true,
-		crossDomain: true,
-		url: 'https://www.trackcorona.live/api/cities',
-		method: 'GET',
-	};
-
-	$.ajax(settings).done(function (response) {
-		data = response.data;
-		console.log(data);
-	});
 
 	// Canvas & color settings
 	createCanvas(ww, hh);
@@ -97,12 +98,12 @@ function setup() {
 	var cx = mercX(clon);
 	var cy = mercY(clat);
 
-	for (var i = 1; i < earthquakes.length; i++) {
-		var data = earthquakes[i].split(/,/);
+	for (var i = 1; i < data.length; i++) {
+		// var data = earthquakes[i].split(/,/);
 		//console.log(data);
-		var lat = data[1];
-		var lon = data[2];
-		var mag = data[4];
+		var lat = data[i].latitude;
+		var lon = data[i].longitude;
+		var mag = data[i].confirmed;
 		var x = mercX(lon) - cx;
 		var y = mercY(lat) - cy;
 		// This addition fixes the case where the longitude is non-zero and
