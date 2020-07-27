@@ -24,7 +24,7 @@ function setup() {
   }
 
   $.ajax(settings).done(function (response) {
-    data = response;
+    data = response.data;
     console.log(data);
   });
 
