@@ -1,78 +1,12 @@
-// Be sure to name any p5.js functions we use in the global so Glitch can recognize them.
-// Add to this list as you consult the p5.js documentation for other functions.
-/* global createCanvas, colorMode, HSB, background, ellipse, random, width, height,
-   rect, line, text, rectMode, CENTER, mouseX, mouseY, windowWidth, windowHeight, fill, collidePointCircle, strokeWeight,
-   point, createButton, textSize*/
-
-let backgroundColor,
-	spherePosition,
-	rectPosition,
-	squareCircleDist,
-	mouseCircleDist,
-	H,
-	numberOfObstacles,
-	obstacle1,
-	obstacle2,
-	obstacle3,
-	obstacle4,
-	obstacle5,
-	obstacle6,
-	obstacle7,
-	obstacle8,
-	obstacle9,
-	obstacle10,
-	hit,
-	winHit,
-	gameOver,
-	button;
 let data;
+let myMap;
+let canvas;
+const mappa = new Mappa('Leaflet');
 
-var mapimg;
-
-var clat = 0;
-var clon = 0;
-
-var ww = 1024;
-var hh = 512;
-
-var zoom = 1;
-var earthquakes;
 
 function preload() {
 	// The clon and clat in this url are edited to be in the correct order.
-	mapimg = loadImage(
-		'https://api.mapbox.com/styles/v1/mapbox/dark-v9/static/' +
-			clon +
-			',' +
-			clat +
-			',' +
-			zoom +
-			'/' +
-			ww +
-			'x' +
-			hh +
-			'?access_token=pk.eyJ1IjoiYWx6aDkwMDAiLCJhIjoiY2tkNG8yZm13MWp1dDJycXZtN29hbm9qZyJ9.zbe-GRhR174ao3ZcFT3_Rw'
-	);
-	
-}
 
-function mercX(lon) {
-	lon = radians(lon);
-	var a = (256 / PI) * pow(2, zoom);
-	var b = lon + PI;
-	return a * b;
-}
-
-function mercY(lat) {
-	lat = radians(lat);
-	var a = (256 / PI) * pow(2, zoom);
-	var b = tan(PI / 4 + lat / 2);
-	var c = PI - log(b);
-	return a * c;
-}
-
-function setup() {
-	//api call to get corona data
 	var settings = {
 		async: true,
 		crossDomain: true,
@@ -83,40 +17,26 @@ function setup() {
 	$.ajax(settings).done(function (response) {
 		data = response.data;
 		console.log(data);
-
-		// Canvas & color settings
-		createCanvas(ww, hh);
-		translate(width / 2, height / 2);
-		imageMode(CENTER);
-		image(mapimg, 0, 0);
-
-		var cx = mercX(clon);
-		var cy = mercY(clat);
-
-		for (var i = 1; i < data.length; i++) {
-			// var data = earthquakes[i].split(/,/);
-			//console.log(data);
-			var lat = data[i].latitude;
-			var lon = data[i].longitude;
-			var mag = data[i].confirmed / 700;
-			var x = mercX(lon) - cx;
-			var y = mercY(lat) - cy;
-			// This addition fixes the case where the longitude is non-zero and
-			// points can go off the screen.
-			if (x < -width / 2) {
-				x += width;
-			} else if (x > width / 2) {
-				x -= width;
-			}
-			// mag = pow(10, mag);
-			// mag = sqrt(mag);
-			var magmax = sqrt(pow(10, 6));
-			var d = map(mag, 0, magmax, 0, 180);
-			stroke(255, 0, 0);
-			fill(255, 0, 0, 200);
-			ellipse(x, y, d, d);
-		}
 	});
+}
+
+
+const options = {
+	lat: 0,
+	lng: 0,
+	zoom: 4,
+	style: "http://{s}.tile.osm.org/{z}/{x}/{y}.png"
+}
+
+
+function setup() {
+	canvas = createCanvas(640, 640);
+	myMap = mappa.tileMap(options);
+	myMap.overlay(canvas);
+	fill(200, 100, 100);
+
+
+
 }
 
 // We can use the sigmoid function to scale the cases?
@@ -126,9 +46,13 @@ function sigmoid(t) {
 
 function draw() {
 	// background(backgroundColor, 100, 100);
-}
+	clear();
 
-// function mousePressed() {
-// 	spherePosition.x = random(width);
-// 	spherePosition.y = random(height);
-// }
+	console.log(data);
+	for (let i = 0; i < data.length; i++) {
+
+		const point = myMap.latLngToPixel(data[i].latitude, data[i].longitude);
+		ellipse(point.x, point.y, 20, 20);
+	}
+
+}
