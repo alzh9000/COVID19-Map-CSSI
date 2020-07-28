@@ -5,19 +5,8 @@ const mappa = new Mappa('Leaflet');
 
 
 function preload() {
-	// The clon and clat in this url are edited to be in the correct order.
-
-	var settings = {
-		async: true,
-		crossDomain: true,
-		url: 'https://www.trackcorona.live/api/cities',
-		method: 'GET',
-	};
-
-	$.ajax(settings).done(function (response) {
-		data = response.data;
-		console.log(data);
-	});
+	let url = 'https://www.trackcorona.live/api/cities';
+	data = loadJSON(url);
 }
 
 
@@ -35,7 +24,7 @@ function setup() {
 	myMap.overlay(canvas);
 	fill(200, 100, 100);
 
-
+	console.log(data.data)
 
 }
 
@@ -48,10 +37,9 @@ function draw() {
 	// background(backgroundColor, 100, 100);
 	clear();
 
-	console.log(data);
-	for (let i = 0; i < data.length; i++) {
+	for (let i = 0; i < data.data.length; i++) {
 
-		const point = myMap.latLngToPixel(data[i].latitude, data[i].longitude);
+		const point = myMap.latLngToPixel(data.data[i].latitude, data.data[i].longitude);
 		ellipse(point.x, point.y, 20, 20);
 	}
 
