@@ -101,7 +101,7 @@ function setup() {
 			//console.log(data);
 			var lat = data[i].latitude;
 			var lon = data[i].longitude;
-			var mag = data[i].confirmed / 1000;
+			var mag = data[i].confirmed / 700;
 			var x = mercX(lon) - cx;
 			var y = mercY(lat) - cy;
 			// This addition fixes the case where the longitude is non-zero and
