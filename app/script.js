@@ -24,6 +24,7 @@ function setup() {
 	myMap.overlay(canvas);
 	fill(200, 100, 100);
 
+	myMap.onChange(drawPoint);
 	console.log(data.data)
 
 }
@@ -34,13 +35,20 @@ function sigmoid(t) {
 }
 
 function draw() {
+
+}
+
+function drawPoint() {
 	// background(backgroundColor, 100, 100);
 	clear();
 
 	for (let i = 0; i < data.data.length; i++) {
 
 		const point = myMap.latLngToPixel(data.data[i].latitude, data.data[i].longitude);
-		ellipse(point.x, point.y, 20, 20);
+		let mag = data.data[i].confirmed / 700
+		let magmax = sqrt(pow(10, 6));
+		let d = map(mag, 0, magmax, 0, 180);
+		ellipse(point.x, point.y, d, d);
 	}
 
 }
