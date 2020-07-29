@@ -2,20 +2,29 @@ let data;
 let myMap;
 let canvas;
 const mappa = new Mappa('Leaflet');
+let locationData;
 
 function preload() {
 	let url = 'https://www.trackcorona.live/api/cities';
 	data = loadJSON(url);
+	locationData = getCurrentPosition();
+	// navigator.geolocation.getCurrentPosition((position) => {
+	// 	curLat = position.coords.latitude
+	// 	curLang = position.coords.longitude;
+
+	//});
 }
 
-const options = {
-	lat: 0,
-	lng: 0,
-	zoom: 4,
-	style: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-};
 
 function setup() {
+
+	const options = {
+		lat: locationData.latitude,
+		lng: locationData.longitude,
+		zoom: 4,
+		style: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+	};
+
 	canvas = createCanvas(640, 640);
 	myMap = mappa.tileMap(options);
 	myMap.overlay(canvas);
