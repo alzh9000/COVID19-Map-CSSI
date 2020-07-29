@@ -1,6 +1,1 @@
-Welcome to CSSI-Online
-======================
-
-This is the base template which already includes the `p5.js` library, the `p5.collide2d.js` library, and a connected `script.js`.
-
-Remember that if you need the collide library in your project, be sure to uncomment it in the `index.html`.
+This is a map of COVID-19 Cases in the world. You can zoom in and zoom out on this map. :)
