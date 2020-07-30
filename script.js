@@ -1,24 +1,6 @@
 let data;
 let myMap;
 let canvas;
-let myLatitude;
-let myLongitude;
-function getLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.watchPosition(showPosition);
-  } else { 
-    x.innerHTML = "Geolocation is not supported by this browser.";
-  }
-}
-    
-function showPosition(position) {
-    myLatitude = position.coords.latitude;
-		myLongitude = position.coords.longitude;
-		return myLongitude,myLongitude;
-}
-getLocation();
-
-
 const mappa = new Mappa('Leaflet');
 let curLat, curLang;
 
@@ -70,12 +52,6 @@ function drawPoint() {
 		let mag = data.data[i].confirmed / 500;
 		let magmax = sqrt(pow(10, 6));
 		let d = 1 + map(mag, 0, magmax, 0, 180);
-		fill('red')
 		ellipse(point.x, point.y, d, d);
-		fill("blue")
-		ellipse(myLatitude,myLongitude,10,10)
 	}
-	
-	
-	console.log(myLatitude)
 }
